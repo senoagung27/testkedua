@@ -7,8 +7,12 @@ use Goutte\Client;
 use App\Models\Scrapping;
 use Illuminate\Http\Request;
 use App\Jobs\DollarScrapeJob;
+use Illuminate\Support\Facades\File;
+// use File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Redis;
+// use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class KursController extends Controller
 {
@@ -74,6 +78,70 @@ class KursController extends Controller
             // ...
         ];
     }
+    public function scrapeAndStoreData()
+    {
+        $url = 'https://kursdollar.org';
+
+        // Scraping data
+        $client = new Client();
+        $crawler = $client->request('GET', $url);
+
+        // Parse data and create the JSON structure
+        $data = $this->parseData($crawler);
+
+        // Save the data to a file
+        $fileName = 'rate-' . Carbon::now()->format('d-m-Y--H-i-s') . '.json';
+        file_put_contents(storage_path('app/' . $fileName), json_encode($data));
+
+        return response()->json(['message' => 'Data scraped and stored successfully.', 'file_name' => $fileName]);
+    }
+    private function parseData($crawler)
+    {
+        // Parse the required data from the crawler
+        // You'll need to inspect the HTML structure and extract the data accordingly
+
+        // For demonstration purposes, I'm providing dummy data
+        $data = [
+            "meta" => [
+                "date" => "29-04-2022",
+                "day" => "Friday",
+                "indonesia" => "Bank Indonesia - 29 Apr, 12:00",
+                "word" => "Spot Dunia 29 Apr, 13:00"
+            ],
+            "rates" => [
+                [
+                    "currency" => "USD",
+                    "buy" => 14345.91,
+                    "sell" => 14490.09,
+                    "average" => 14418.00,
+                    "word_rate" => 14435.05
+                ],
+                [
+                    "currency" => "SGD",
+                    "buy" => 10245.21,
+                    "sell" => 10440.19,
+                    "average" => 10418.00,
+                    "word_rate" => 11055.05
+                ],
+                // Add more currencies and their rates here
+            ]
+        ];
+
+        return $data;
+    }
+    public function clearStoredData()
+    {
+        $files = File::files(storage_path('app/'));
+        foreach ($files as $file) {
+            if (strpos($file->getFilename(), 'rate-') === 0) {
+                File::delete($file);
+            }
+        }
+
+        return response()->json(['message' => 'Data deleted successfully.']);
+    }
+
+
 
     /**
      * Show the form for creating a new resource.

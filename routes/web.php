@@ -22,3 +22,5 @@ Route::get('/', function () {
 // Route::post('/dollar-scraper/run-scrape-job', 'DollarScrapeController@runScrapeJob')->name('dollar-scraper.run-scrape-job');
 // Route::post('/dollar-scraper/clear-data', 'DollarScrapeController@clearData')->name('dollar-scraper.clear-data');
 Route::get('/scrape-and-save', [KursController::class, 'scrapeAndSave']);
+Route::get('/scrape',[KursController::class, 'scrapeAndStoreData']);
+Route::get('/clear-data', [KursController::class, 'clearStoredData']);
