@@ -1,29 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dollar Scraper</title>
+    <title>Kurs Scraper</title>
 </head>
 <body>
-    <h1>Dollar Scraper</h1>
+    <button onclick="scrapeAndSave()">Scrape and Save</button>
 
-    @if (Redis::get('scrape-job-status'))
-        <p>{{ Redis::get('scrape-job-status') }}</p>
-        {{ Redis::del('scrape-job-status') }}
-    @endif
-
-    @if (Redis::get('clear-data-job-status'))
-        <p>{{ Redis::get('clear-data-job-status') }}</p>
-        {{ Redis::del('clear-data-job-status') }}
-    @endif
-
-    <form method="POST" action="{{ route('dollar-scraper.run-scrape-job') }}">
-        @csrf
-        <button type="submit">Scrape Data</button>
-    </form>
-
-    <form method="POST" action="{{ route('dollar-scraper.clear-data') }}">
-        @csrf
-        <button type="submit">Clear Data</button>
-    </form>
+    <script>
+        function scrapeAndSave() {
+            fetch('/scrape-and-save')
+                .then(response => response.text())
+                .then(message => alert(message));
+        }
+    </script>
 </body>
 </html>
